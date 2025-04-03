@@ -55,6 +55,7 @@ export class Container extends DurableObject<Env> {
 				}
 			} else {
 				await this.env.LOAD_BALANCER_STATE.delete(this.ctx.id.toString());
+				await this.setState('stopped');
 			}
 
 			// if no alarm, trigger ASAP
