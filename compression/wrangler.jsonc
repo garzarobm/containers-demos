@@ -1,0 +1,31 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "compressor",
+	"main": "src/index.ts",
+	"compatibility_date": "2025-04-03",
+	"migrations": [
+		{
+			"new_sqlite_classes": [
+				"Compressor",
+			],
+			"tag": "v1"
+		}
+	],
+	"containers": [{
+		"name": "compressor",
+		"image": "./Dockerfile",
+		"class_name": "Compressor",
+		"max_instances": 5
+	}],
+	"durable_objects": {
+		"bindings": [
+			{
+				"class_name": "Compressor",
+				"name": "COMPRESSOR"
+			},
+		]
+	},
+	"observability": {
+		"enabled": true
+	}
+}

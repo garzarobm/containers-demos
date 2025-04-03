@@ -1,0 +1,44 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "compressor-workflows",
+	"main": "src/index.ts",
+	"compatibility_date": "2025-04-03",
+	"migrations": [
+		{
+			"new_sqlite_classes": [
+				"Compressor",
+			],
+			"tag": "v1"
+		}
+	],
+	"containers": [{
+		"name": "compressor-workflows",
+		"image": "./Dockerfile",
+		"class_name": "Compressor",
+		"max_instances": 2
+	}],
+	"durable_objects": {
+		"bindings": [
+			{
+				"class_name": "Compressor",
+				"name": "COMPRESSOR"
+			},
+		]
+	},
+	"observability": {
+		"enabled": true
+	},
+	"workflows": [
+      {
+        "name": "compressor-workflow",
+        "binding": "COMPRESSOR_WORKFLOW",
+        "class_name": "CompressorWorkflow"
+      }
+   ],
+   "r2_buckets": [
+    {
+      "bucket_name": "compressor-results",
+      "binding": "COMPRESSOR_BUCKET"
+    }
+  ]
+}
