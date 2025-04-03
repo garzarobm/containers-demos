@@ -68,6 +68,19 @@ export class Container extends DurableObject<Env> {
 		}
 	}
 
+	async fetch(req: Request) {
+		const url = new URL(req.url.replace('https:', 'http:'));
+		try {
+			return await this.container.getTcpPort(8080).fetch(url, req.clone());
+		} catch (err) {
+			if (err instanceof Error) console.error('Error getting TCP port 8080:', err.message);
+			else throw err;
+
+			await this.setAlarm(Date.now());
+			return new Response('service is unreachable right now', { status: 500 });
+		}
+	}
+
 	async alarm() {
 		try {
 			await this.stateTx(async (state) => {
@@ -105,6 +118,16 @@ export class Container extends DurableObject<Env> {
 
 				console.error('unknown result:', result);
 			});
+
+			const state = await this.state();
+			const key = await this.env.LOAD_BALANCER_STATE.get(this.ctx.id.toString());
+			if (key === null && state === 'running') {
+				console.log("Adding to load balanced as it's running");
+				await this.env.LOAD_BALANCER_STATE.put(this.ctx.id.toString(), `${Date.now()}`);
+			} else if (state !== 'running') {
+				console.log("Removing from load balanced as it's not running:", state);
+				await this.env.LOAD_BALANCER_STATE.delete(this.ctx.id.toString());
+			}
 		} finally {
 			await this.setAlarm();
 		}
@@ -289,6 +312,15 @@ export default {
 
 				return new Response(err.message);
 			}
+		}
+
+		if (url.pathname.includes('/lb')) {
+			const containers = await env.LOAD_BALANCER_STATE.list();
+			const index = Math.floor(Math.random() * containers.keys.length);
+			const key = containers.keys[index];
+			const containerId = env.CONTAINER.idFromString(key.name);
+			const res = await env.CONTAINER.get(containerId).fetch(request);
+			return res;
 		}
 
 		if (url.pathname.includes('/containers')) {

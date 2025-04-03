@@ -31,6 +31,12 @@
 			},
 		]
 	},
+	"kv_namespaces": [
+   	  {
+      	"binding": "LOAD_BALANCER_STATE",
+      	"id": "96b88e244c5c448a9895256729756161"
+      }
+  	],
 	"observability": {
 		"enabled": true
 	}
