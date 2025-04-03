@@ -1,0 +1,35 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "load-balancer",
+	"main": "src/index.ts",
+	"compatibility_date": "2025-04-03",
+	"migrations": [
+		{
+			"new_sqlite_classes": [
+				"Container",
+				"ContainerManager"
+			],
+			"tag": "v1"
+		}
+	],
+	"containers": [{
+		"name": "container",
+		"image": "./Dockefile",
+		"max_instances": 10,
+	}],
+	"durable_objects": {
+		"bindings": [
+			{
+				"class_name": "Container",
+				"name": "CONTAINER"
+			},
+			{
+				"class_name": "ContainerManager",
+				"name": "CONTAINER_MANAGER"
+			},
+		]
+	},
+	"observability": {
+		"enabled": true
+	}
+}
