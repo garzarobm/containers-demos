@@ -19,10 +19,6 @@ function noContainerYetError(err: Error): boolean {
 	return err.message.includes('there is no container instance');
 }
 
-function wait(ms: number): Promise<unknown> {
-	return new Promise((res) => setTimeout(res, ms));
-}
-
 export class Container extends DurableObject<Env> {
 	container: globalThis.Container;
 	monitor?: Promise<unknown>;
@@ -96,6 +92,7 @@ export class Container extends DurableObject<Env> {
 					return;
 				}
 
+				console.log('Container got a result from healthcheck:', result);
 				if (result === 'ok') {
 					await this.setState('running');
 					return;
@@ -141,6 +138,7 @@ export class Container extends DurableObject<Env> {
 
 	// 'start' will start the container, and it will make sure it runs until the end
 	async start(containerStart?: ContainerStartupOptions) {
+		console.log('Calling start on container:', this.container.running);
 		if (this.container.running) {
 			if (this.monitor === undefined) {
 				this.monitor = this.container.monitor();
@@ -171,7 +169,7 @@ export class Container extends DurableObject<Env> {
 	// in the port returned a successful status code.
 	// It will return a Response object when the status code is not ok.
 	// It will return a known error enum if the container is not ready yet.
-	async healthCheck(portNumber = 8000): Promise<'ok' | 'not_listening' | 'no_container_yet' | Response> {
+	async healthCheck(portNumber = 8080): Promise<'ok' | 'not_listening' | 'no_container_yet' | Response> {
 		const port = this.container.getTcpPort(portNumber);
 		const [res, err] = await wrap(port.fetch(new Request('http://container/_health')));
 		if (err !== null) {
@@ -200,25 +198,111 @@ export class Container extends DurableObject<Env> {
 export class ContainerManager extends DurableObject<Env> {
 	constructor(ctx: DurableObjectState, env: Env) {
 		super(ctx, env);
+		this.ctx.storage.setAlarm(Date.now());
 	}
 
 	async setNumberOfInstances(instances: number) {
 		await this.ctx.storage.put('instances', instances);
+		await this.ctx.storage.setAlarm(Date.now());
 	}
 
-	async getContainerStates(): Promise<ContainerState[]> {
+	containerId(instance: number): DurableObjectId {
+		return this.env.CONTAINER.idFromName(`instance-${instance}`);
+	}
+
+	async alarm() {
+		try {
+			this.ctx.blockConcurrencyWhile(async () => {
+				const instances = (await this.ctx.storage.get<number>('instances')) ?? 0;
+				for (let instance = 0; instance < instances; instance++) {
+					const containerId = this.containerId(instance);
+					const container = this.env.CONTAINER.get(containerId);
+					const [state, err] = await wrap(container.state());
+					console.log('Container instance', instance, 'belongs to actor id', containerId.toString());
+
+					if (err !== null) {
+						console.error('Container instance', instance, 'threw an error', containerId.toString(), err.message);
+						continue;
+					}
+
+					if (state === 'failed') {
+						console.warn('Container', instance, 'returned failed');
+					}
+
+					if (state === 'stopped') {
+						console.log('Container', instance, 'is stopped');
+					}
+
+					if (state === 'starting' || state === 'failed' || state === 'stopped') {
+						const [, err] = await wrap(container.start());
+						if (err !== null) console.error('Container instance start()', instance, 'threw an error', containerId.toString(), err.message);
+						console.log('Container', instance, 'started');
+						continue;
+					}
+
+					if (state === 'unhealthy') {
+						console.warn('Container', instance, 'is unhealthy right now');
+					}
+
+					if (state === 'running') {
+						console.log('Container', instance, 'is ok');
+					}
+				}
+			});
+		} finally {
+			await this.ctx.storage.setAlarm(Date.now() + 1000);
+		}
+	}
+
+	async getContainerStates(): Promise<(ContainerState | 'unknown')[]> {
 		const instances = (await this.ctx.storage.get<number>('instances')) ?? 0;
-		const statuses: ContainerState[] = [];
+		const statuses: (ContainerState | 'unknown')[] = [];
 
 		// TODO: do this in parallel basis with concurrency limits
-		for (let i = 0; i < instances; i++) {}
+		for (let i = 0; i < instances; i++) {
+			const stub = this.env.CONTAINER.get(this.containerId(i));
+			const [state, err] = await wrap(stub.state());
+			if (err !== null) {
+				console.error(`Instance ${stub.id.toString()} (${i}) threw an error when hitting: ${err.message}`);
+				statuses.push('unknown');
+				continue;
+			}
+
+			statuses.push(state);
+		}
 
 		return statuses;
 	}
 }
 
 export default {
-	async fetch(request, env, ctx): Promise<Response> {
-		return new Response('hello');
+	async fetch(request, env): Promise<Response> {
+		const url = new URL(request.url);
+		const manager = env.CONTAINER_MANAGER.get(env.CONTAINER_MANAGER.idFromName('manager'));
+
+		if (url.pathname.includes('/statuses')) {
+			try {
+				const states = await manager.getContainerStates();
+				return Response.json(states);
+			} catch (err) {
+				if (!(err instanceof Error)) throw err;
+
+				return new Response(err.message);
+			}
+		}
+
+		if (url.pathname.includes('/containers')) {
+			const instancesString = url.pathname.split('/').pop();
+			if (instancesString === null || instancesString === undefined) return new Response('expected /containers/<number>');
+
+			const instances = +instancesString;
+			if (isNaN(instances)) return new Response('expected /containers/<number>');
+			await manager.setNumberOfInstances(instances);
+			return new Response('ok');
+		}
+
+		return new Response(
+			'Hit /statuses if you want to list containers. Hit /containers/<number-of-instances> to scale to a certain number of instances',
+		);
 	},
 } satisfies ExportedHandler<Env>;

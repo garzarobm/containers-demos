@@ -14,8 +14,10 @@
 	],
 	"containers": [{
 		"name": "container",
-		"image": "./Dockefile",
+		"image": "./Dockerfile",
+		"class_name": "Container",
 		"max_instances": 10,
+		"instances": 0,
 	}],
 	"durable_objects": {
 		"bindings": [
