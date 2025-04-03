@@ -86,6 +86,11 @@ export class Container extends DurableObject<Env> {
 		try {
 			const recalculateState = async () => {
 				const state = await this.state();
+				if (state === 'stopped') {
+					// TODO: GC itself
+					return;
+				}
+
 				const [result, err] = await wrap(this.healthCheck());
 				if (err !== null) {
 					console.error('Received an internal error from healthCheck:', err.message);
@@ -123,6 +128,18 @@ export class Container extends DurableObject<Env> {
 			await recalculateState();
 			const state = await this.state();
 
+			const stop = async () => {
+				this.env.LOAD_BALANCER_STATE.delete(this.ctx.id.toString());
+				if (this.container.running) this.container.signal(15);
+				await this.setState('stopped');
+			};
+
+			const instances = await this.ctx.storage.get<number>('instance');
+			if (instances === undefined) {
+				await stop();
+				return;
+			}
+
 			const key = await this.env.LOAD_BALANCER_STATE.get(this.ctx.id.toString());
 			if (key === null && state === 'running') {
 				console.log("Adding to load balanced as it's running");
@@ -130,6 +147,11 @@ export class Container extends DurableObject<Env> {
 			} else if (state !== 'running') {
 				console.log("Removing from load balanced as it's not running:", state);
 				await this.env.LOAD_BALANCER_STATE.delete(this.ctx.id.toString());
+			}
+
+			const manager = this.env.CONTAINER_MANAGER.get(this.env.CONTAINER_MANAGER.idFromName('manager'));
+			if (!(await manager.shouldIKeepRunning(instances))) {
+				await stop();
 			}
 		} finally {
 			await this.setAlarm();
@@ -163,7 +185,7 @@ export class Container extends DurableObject<Env> {
 	}
 
 	// 'start' will start the container, and it will make sure it runs until the end
-	async start(containerStart?: ContainerStartupOptions) {
+	async start(instance: number, containerStart?: ContainerStartupOptions) {
 		console.log('Calling start on container:', this.container.running);
 		if (this.container.running) {
 			if (this.monitor === undefined) {
@@ -173,6 +195,9 @@ export class Container extends DurableObject<Env> {
 
 			return;
 		}
+
+		await this.ctx.storage.put('instance', instance);
+		await this.ctx.storage.sync();
 
 		await this.setState('starting');
 		this.container.start(containerStart);
@@ -232,6 +257,12 @@ export class ContainerManager extends DurableObject<Env> {
 		await this.ctx.storage.setAlarm(Date.now());
 	}
 
+	async shouldIKeepRunning(containerInstance: number) {
+		const instances = (await this.ctx.storage.get<number>('instances')) ?? 0;
+		if (instances <= containerInstance) return false;
+		return true;
+	}
+
 	containerId(instance: number): DurableObjectId {
 		return this.env.CONTAINER.idFromName(`instance-${instance}`);
 	}
@@ -260,7 +291,7 @@ export class ContainerManager extends DurableObject<Env> {
 					}
 
 					if (state === 'starting' || state === 'failed' || state === 'stopped') {
-						const [, err] = await wrap(container.start());
+						const [, err] = await wrap(container.start(instance));
 						if (err !== null) console.error('Container instance start()', instance, 'threw an error', containerId.toString(), err.message);
 						console.log('Container', instance, 'started');
 						continue;
@@ -321,7 +352,7 @@ export default {
 		if (url.pathname.includes('/lb')) {
 			const containers = await env.LOAD_BALANCER_STATE.list();
 			if (containers.keys.length === 0) {
-				return Response.json({ error: 'no containers are healthy' }, {status: 500});
+				return Response.json({ error: 'no containers are healthy' }, { status: 500 });
 			}
 
 			const index = Math.floor(Math.random() * containers.keys.length);
