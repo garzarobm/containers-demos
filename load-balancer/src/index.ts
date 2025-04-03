@@ -53,6 +53,8 @@ export class Container extends DurableObject<Env> {
 					this.monitor = this.container.monitor();
 					this.handleMonitorPromise(this.monitor);
 				}
+			} else {
+				await this.env.LOAD_BALANCER_STATE.delete(this.ctx.id.toString());
 			}
 
 			// if no alarm, trigger ASAP
@@ -75,7 +77,6 @@ export class Container extends DurableObject<Env> {
 		} catch (err) {
 			if (err instanceof Error) console.error('Error getting TCP port 8080:', err.message);
 			else throw err;
-
 			await this.setAlarm(Date.now());
 			return new Response('service is unreachable right now', { status: 500 });
 		}
@@ -83,8 +84,8 @@ export class Container extends DurableObject<Env> {
 
 	async alarm() {
 		try {
-			await this.stateTx(async (state) => {
-				console.log('Current container state:', state);
+			const recalculateState = async () => {
+				const state = await this.state();
 				const [result, err] = await wrap(this.healthCheck());
 				if (err !== null) {
 					console.error('Received an internal error from healthCheck:', err.message);
@@ -117,9 +118,11 @@ export class Container extends DurableObject<Env> {
 				}
 
 				console.error('unknown result:', result);
-			});
+			};
 
+			await recalculateState();
 			const state = await this.state();
+
 			const key = await this.env.LOAD_BALANCER_STATE.get(this.ctx.id.toString());
 			if (key === null && state === 'running') {
 				console.log("Adding to load balanced as it's running");
@@ -305,8 +308,9 @@ export default {
 
 		if (url.pathname.includes('/statuses')) {
 			try {
+				const containers = await env.LOAD_BALANCER_STATE.list();
 				const states = await manager.getContainerStates();
-				return Response.json(states);
+				return Response.json({ states, load_balancer: containers.keys });
 			} catch (err) {
 				if (!(err instanceof Error)) throw err;
 
@@ -316,10 +320,18 @@ export default {
 
 		if (url.pathname.includes('/lb')) {
 			const containers = await env.LOAD_BALANCER_STATE.list();
+			if (containers.keys.length === 0) {
+				return Response.json({ error: 'no containers are healthy' }, {status: 500});
+			}
+
 			const index = Math.floor(Math.random() * containers.keys.length);
 			const key = containers.keys[index];
 			const containerId = env.CONTAINER.idFromString(key.name);
+
+			// Ideally, we are able to redirect the request somewhere else
+			// if this throws an internal error.
 			const res = await env.CONTAINER.get(containerId).fetch(request);
+
 			return res;
 		}
 
