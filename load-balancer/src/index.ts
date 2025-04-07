@@ -74,7 +74,7 @@ export class Container extends DurableObject<Env> {
 	async fetch(req: Request) {
 		const url = new URL(req.url.replace('https:', 'http:'));
 		try {
-			return await this.container.getTcpPort(8080).fetch(url, req.clone());
+			return await this.container.getTcpPort(8080).fetch(url, req);
 		} catch (err) {
 			if (err instanceof Error) console.error('Error getting TCP port 8080:', err.message);
 			else throw err;
@@ -270,7 +270,7 @@ export class ContainerManager extends DurableObject<Env> {
 
 	async alarm() {
 		try {
-			this.ctx.blockConcurrencyWhile(async () => {
+			await this.ctx.blockConcurrencyWhile(async () => {
 				const instances = (await this.ctx.storage.get<number>('instances')) ?? 0;
 				for (let instance = 0; instance < instances; instance++) {
 					const containerId = this.containerId(instance);

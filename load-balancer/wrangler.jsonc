@@ -1,6 +1,6 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "load-balancer",
+	"name": "load-balancer-2",
 	"main": "src/index.ts",
 	"compatibility_date": "2025-04-03",
 	"migrations": [
@@ -13,10 +13,11 @@
 		}
 	],
 	"containers": [{
-		"name": "container",
+		"name": "container-2",
 		"image": "./Dockerfile",
 		"class_name": "Container",
-		"max_instances": 10
+		"max_instances": 3,
+		"instances": 0
 	}],
 	"durable_objects": {
 		"bindings": [
