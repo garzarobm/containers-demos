@@ -1,0 +1,32 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "job-runner",
+	"main": "src/index.ts",
+	"compatibility_date": "2025-04-03",
+	"migrations": [
+		{
+			"new_sqlite_classes": [
+				"Container",
+			],
+			"tag": "v1"
+		}
+	],
+	"containers": [{
+		"name": "runner",
+		"image": "./Dockerfile",
+		"class_name": "Container",
+		"max_instances": 10,
+		"instances": 0
+	}],
+	"durable_objects": {
+		"bindings": [
+			{
+				"class_name": "Container",
+				"name": "CONTAINER"
+			},
+		]
+	},
+	"observability": {
+		"enabled": true
+	}
+}
