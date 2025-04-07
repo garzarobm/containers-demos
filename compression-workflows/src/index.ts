@@ -24,6 +24,7 @@ export class CompressorWorkflow extends WorkflowEntrypoint<Env, Params> {
 						return;
 					} catch (err) {
 						console.error('transient error:', err instanceof Error ? err.message : JSON.stringify(err));
+						await sleep(500);
 						lastErr = err;
 					}
 				}
