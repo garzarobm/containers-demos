@@ -1,0 +1,31 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "http2",
+	"main": "src/index.ts",
+	"compatibility_date": "2025-04-03",
+	"migrations": [
+		{
+			"new_sqlite_classes": [
+				"Container",
+			],
+			"tag": "v1"
+		}
+	],
+	"containers": [{
+		"name": "http2",
+		"image": "./Dockerfile",
+		"class_name": "Container",
+		"max_instances": 2
+	}],
+	"durable_objects": {
+		"bindings": [
+			{
+				"class_name": "Container",
+				"name": "CONTAINER"
+			},
+		]
+	},
+	"observability": {
+		"enabled": true
+	}
+}

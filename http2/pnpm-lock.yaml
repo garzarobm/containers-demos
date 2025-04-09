@@ -10,13 +10,13 @@ importers:
     devDependencies:
       '@cloudflare/workers-types':
         specifier: ^4.20250403.0
-        version: 4.20250403.0
+        version: 4.20250409.0
       typescript:
         specifier: ^5.5.2
-        version: 5.8.2
+        version: 5.8.3
       wrangler:
         specifier: https://prerelease-registry.devprod.cloudflare.dev/workers-sdk/runs/14359522163/npm-package-wrangler-8740
-        version: https://prerelease-registry.devprod.cloudflare.dev/workers-sdk/runs/14359522163/npm-package-wrangler-8740(@cloudflare/workers-types@4.20250403.0)
+        version: https://prerelease-registry.devprod.cloudflare.dev/workers-sdk/runs/14359522163/npm-package-wrangler-8740(@cloudflare/workers-types@4.20250409.0)
 
 packages:
 
@@ -65,8 +65,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@cloudflare/workers-types@4.20250403.0':
-    resolution: {integrity: sha512-wLsXNfxBPsV+PPUInCCFeoXTZMHNEAFHvVe1E0/S0Cp9JrKTsSEeIMY4zUvR5ULxNAQkeDVqPjYRaKFkzpkX3w==}
+  '@cloudflare/workers-types@4.20250409.0':
+    resolution: {integrity: sha512-yPxxwE5nr168huEfLNOB6904OsvIWcq0tWT23NMD6jT5SIp2ds3oOGANw7wz39r5y3jZYC2h1OnGwnZXJDDCOg==}
 
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
@@ -466,13 +466,13 @@ packages:
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
-  typescript@5.8.2:
-    resolution: {integrity: sha512-aJn6wq13/afZp/jT9QZmwEjDqqvSGp1VT5GVg+f/t6/oVyrgXM6BY1h9BRh/O5p3PlUPAe+WuiEZOmb/49RqoQ==}
+  typescript@5.8.3:
+    resolution: {integrity: sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==}
     engines: {node: '>=14.17'}
     hasBin: true
 
-  ufo@1.5.4:
-    resolution: {integrity: sha512-UsUk3byDzKd04EyoZ7U4DOlxQaD14JUKQl6/P7wiX4FNvUfm3XL246n9W5AmqwW5RSFJ27NAuM0iLscAOYUiGQ==}
+  ufo@1.6.1:
+    resolution: {integrity: sha512-9a4/uxlTWJ4+a5i0ooc1rU7C7YOw3wT+UGqdeNNHWnOF9qcMBgLRS+4IYUqbczewFx4mLEig6gawh7X6mFlEkA==}
 
   undici@5.29.0:
     resolution: {integrity: sha512-raqeBD6NQK4SkWhQzeYKd1KmIG6dllBOTt55Rmkt4HtI9mwdWtJljnrXjAFUBLTSN67HWrOIZ3EPF4kjUw80Bg==}
@@ -542,7 +542,7 @@ snapshots:
   '@cloudflare/workerd-windows-64@1.20250408.0':
     optional: true
 
-  '@cloudflare/workers-types@4.20250403.0': {}
+  '@cloudflare/workers-types@4.20250409.0': {}
 
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
@@ -874,9 +874,9 @@ snapshots:
   tslib@2.8.1:
     optional: true
 
-  typescript@5.8.2: {}
+  typescript@5.8.3: {}
 
-  ufo@1.5.4: {}
+  ufo@1.6.1: {}
 
   undici@5.29.0:
     dependencies:
@@ -888,7 +888,7 @@ snapshots:
       exsolve: 1.0.4
       ohash: 2.0.11
       pathe: 2.0.3
-      ufo: 1.5.4
+      ufo: 1.6.1
 
   workerd@1.20250408.0:
     optionalDependencies:
@@ -898,7 +898,7 @@ snapshots:
       '@cloudflare/workerd-linux-arm64': 1.20250408.0
       '@cloudflare/workerd-windows-64': 1.20250408.0
 
-  wrangler@https://prerelease-registry.devprod.cloudflare.dev/workers-sdk/runs/14359522163/npm-package-wrangler-8740(@cloudflare/workers-types@4.20250403.0):
+  wrangler@https://prerelease-registry.devprod.cloudflare.dev/workers-sdk/runs/14359522163/npm-package-wrangler-8740(@cloudflare/workers-types@4.20250409.0):
     dependencies:
       '@cloudflare/kv-asset-handler': https://prerelease-registry.devprod.cloudflare.dev/workers-sdk/runs/14359522163/npm-package-cloudflare-kv-asset-handler-8740
       '@cloudflare/unenv-preset': https://prerelease-registry.devprod.cloudflare.dev/workers-sdk/runs/14359522163/npm-package-cloudflare-unenv-preset-8740(unenv@2.0.0-rc.15)(workerd@1.20250408.0)
@@ -909,7 +909,7 @@ snapshots:
       unenv: 2.0.0-rc.15
       workerd: 1.20250408.0
     optionalDependencies:
-      '@cloudflare/workers-types': 4.20250403.0
+      '@cloudflare/workers-types': 4.20250409.0
       fsevents: 2.3.3
       sharp: 0.33.5
     transitivePeerDependencies:
