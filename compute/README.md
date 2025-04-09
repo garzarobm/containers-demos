@@ -4,7 +4,7 @@ This example shows how you could have multiple classes of compute managed by a s
 
 ## How to deploy
 
-To deploy this example all that is required is the appropriate permissionAand a call to `wrangler deploy`.
+To deploy this example all that is required is the appropriate permission and a call to `pnpm run deploy`.
 
 
 ## Launching a compute job

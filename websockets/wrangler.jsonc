@@ -15,8 +15,7 @@
 		"name": "container-websockets",
 		"image": "./Dockerfile",
 		"class_name": "Container",
-		"max_instances": 3,
-		"instances": 0
+		"max_instances": 3
 	}],
 	"durable_objects": {
 		"bindings": [

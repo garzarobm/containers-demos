@@ -1,6 +1,8 @@
+# Durable Object Container examples
+
+This repository contains a set of directories with Durable Object Container examples.
+
+To deploy any of this examples you have to:
 ```
-Set of examples for Container + Workers
-
-
-Still WIP.
+cd <example> && pnpm install && pnpm run deploy
 ```

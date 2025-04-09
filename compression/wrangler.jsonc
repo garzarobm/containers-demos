@@ -15,8 +15,7 @@
 		"name": "compressor",
 		"image": "./Dockerfile",
 		"class_name": "Compressor",
-		"max_instances": 5,
-		"instances": 0
+		"max_instances": 5
 	}],
 	"durable_objects": {
 		"bindings": [
