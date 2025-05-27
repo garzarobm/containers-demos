@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "cf-containers": "^0.0.8"
+  }
+}

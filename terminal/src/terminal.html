@@ -1,0 +1,149 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Xterm.js via Cloudflare Worker (Proxied)</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css"
+    />
+    <style>
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        background-color: #1e1e1e;
+        font-family:
+          "Menlo", "Consolas", "Liberation Mono", "Courier New", monospace;
+      }
+      #terminal-container {
+        width: 100%;
+        height: 100%;
+        padding: 5px;
+        box-sizing: border-box;
+      }
+      #terminal {
+        width: 100%;
+        height: 100%;
+      }
+      .xterm .xterm-viewport {
+        overflow-y: auto; /* Important for scrollback */
+      }
+    </style>
+  </head>
+  <body>
+    <div id="terminal-container"><div id="terminal"></div></div>
+    <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-attach@0.9.0/lib/xterm-addon-attach.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.js"></script>
+    <script>
+      const term = new Terminal({
+        cursorBlink: true,
+        fontSize: 14,
+        fontFamily:
+          'Menlo, Consolas, "Liberation Mono", "Courier New", monospace',
+        theme: {
+          background: "#1e1e1e",
+          foreground: "#d4d4d4",
+          cursor: "#d4d4d4",
+          selectionBackground: "#555555",
+        },
+        rows: 30, // Initial, FitAddon will adjust
+        cols: 80, // Initial, FitAddon will adjust
+        allowProposedApi: true, // For newer xterm.js addon features if you upgrade
+      });
+      const fitAddon = new FitAddon.FitAddon();
+      term.loadAddon(fitAddon);
+      term.open(document.getElementById("terminal"));
+
+      function fitTerminal() {
+        try {
+          fitAddon.fit();
+        } catch (e) {
+          console.error("Error fitting terminal:", e);
+        }
+      }
+
+      window.addEventListener("resize", fitTerminal); // Fit on window resize
+
+      // WebSocket connection to this Cloudflare Worker itself, on the /ws path
+      const workerWsUrl =
+        (location.protocol === "https:" ? "wss://" : "ws://") +
+        location.host +
+        "/terminal";
+
+      term.writeln("Welcome to xterm.js (Proxied by Cloudflare Worker)!");
+      term.writeln("Attempting to connect to WebSocket proxy: " + workerWsUrl);
+      term.writeln("");
+
+      let socket;
+      let attachAddon; // xterm.js addon to connect terminal to WebSocket
+
+      function connectWebSocket() {
+        socket = new WebSocket(workerWsUrl);
+
+        // Dispose of the old attachAddon if it exists (important for reconnection)
+        if (attachAddon) {
+          attachAddon.dispose();
+        }
+        attachAddon = new AttachAddon.AttachAddon(socket);
+        term.loadAddon(attachAddon); // This handles data flow between xterm and socket
+
+        socket.onopen = () => {
+          term.writeln(
+            "\\r\\n\\x1b[32mWorker WebSocket connection established.\\x1b[0m",
+          );
+          term.writeln(
+            "\\x1b[36mTerminal is now proxied to the backend PTY host.\\x1b[0m",
+          );
+          term.focus();
+          fitTerminal(); // Fit terminal after connection established and terminal is visible
+        };
+
+        socket.onclose = (event) => {
+          term.writeln("");
+          term.writeln(
+            "\\r\\n\\x1b[31mWorker WebSocket connection closed. Code: " +
+              event.code +
+              ". Reason: " +
+              (event.reason || "N/A") +
+              "\\x1b[0m",
+          );
+          if (
+            event.code === 1011 &&
+            event.reason &&
+            event.reason.toLowerCase().includes("backend")
+          ) {
+            term.writeln(
+              "\\x1b[31mThis might be due to an issue with the backend PTY host or the proxy connection to it.\\x1b[0m",
+            );
+          } else if (event.code === 1006) {
+            term.writeln(
+              "\\x1b[33mConnection closed abnormally. Check network or worker logs.\\x1b[0m",
+            );
+          }
+          term.writeln(
+            "\\x1b[33mAttempting to reconnect to worker in 5 seconds...\\x1b[0m",
+          );
+          // attachAddon is disposed of at the start of connectWebSocket
+          setTimeout(connectWebSocket, 5000); // Reconnect after 5 seconds
+        };
+
+        socket.onerror = (error) => {
+          // This typically precedes an onclose event
+          term.writeln(
+            "\\r\\n\\x1b[31mWorker WebSocket error. See browser console for details.\\x1b[0m",
+          );
+          console.error("Worker WebSocket Error: ", error);
+        };
+      }
+
+      // Initial connection attempt
+      connectWebSocket();
+    </script>
+  </body>
+</html>
+`;

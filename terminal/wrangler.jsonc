@@ -1,0 +1,36 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "shell",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-04-03",
+  "compatibility_flags": ["nodejs_compat"],
+  "migrations": [
+    {
+      "new_sqlite_classes": ["TerminalContainer"],
+      "tag": "v1",
+    },
+  ],
+  "containers": [
+    {
+      "name": "terminal-websockets",
+      "image": "./Dockerfile",
+      "class_name": "TerminalContainer",
+      "max_instances": 1,
+      "configuration": {
+        "vcpu": 2,
+        "memory_mib": 256,
+      },
+    },
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "class_name": "TerminalContainer",
+        "name": "TERMINAL",
+      },
+    ],
+  },
+  "observability": {
+    "enabled": true,
+  },
+}

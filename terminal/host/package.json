@@ -1,0 +1,13 @@
+{
+  "name": "pty-websocket-host",
+  "version": "1.0.0",
+  "description": "Node.js PTY WebSocket host for xterm.js",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "node-pty": "^1.0.0",
+    "ws": "^8.17.0"
+  }
+}
