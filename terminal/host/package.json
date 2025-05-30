@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "description": "Node.js PTY WebSocket host for xterm.js",
   "main": "server.js",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "node-pty"
+    ]
+  },
   "scripts": {
     "start": "node server.js"
   },
