@@ -28,7 +28,7 @@ export class Container extends DurableObject<Env> {
 	}
 
 	async init() {
-		if (!this.container.running) this.container.start();
+		if (!this.container.running) this.container.start({ enableInternet: true });
 	}
 
 	async fetch(req: Request) {
