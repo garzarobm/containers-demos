@@ -3,26 +3,10 @@ import { DurableObject } from 'cloudflare:workers';
 export class Container extends DurableObject<Env> {
 	container: globalThis.Container;
 
-	async blockConcurrencyRetry(cb: () => Promise<unknown>) {
-		await this.ctx.blockConcurrencyWhile(async () => {
-			let lastErr;
-			for (let i = 0; i < 10; i++) {
-				try {
-					return await cb();
-				} catch (err) {
-					lastErr = err;
-					continue;
-				}
-			}
-
-			throw lastErr;
-		});
-	}
-
 	constructor(ctx: DurableObjectState, env: Env) {
 		super(ctx, env);
 		this.container = ctx.container!;
-		this.blockConcurrencyRetry(async () => {
+		this.ctx.blockConcurrencyWhile(async () => {
 			await this.init();
 		});
 	}
