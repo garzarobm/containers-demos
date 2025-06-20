@@ -15,7 +15,7 @@
 		"name": "container-marimo",
 		"image": "./Dockerfile",
 		"class_name": "Container",
-		"max_instances": 3
+		"max_instances": 2
 	}],
 	"durable_objects": {
 		"bindings": [
