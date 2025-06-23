@@ -3,7 +3,7 @@
 		"deploy": "wrangler deploy"
   },
   "dependencies": {
-    "cf-containers": "^0.0.8",
+    "@cloudflare/containers": "^0.0.10",
     "node-pty": "^1.0.0",
     "ws": "^8.17.0"
   },
