@@ -20,7 +20,7 @@
 	"migrations": [
 		{
 			"new_sqlite_classes": [
-				"CodeExecutor",
+				"CodeExecutor"
 			],
 			"tag": "v1"
 		}

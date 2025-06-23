@@ -6,7 +6,7 @@
 	"migrations": [
 		{
 			"new_sqlite_classes": [
-				"Compressor",
+				"Compressor"
 			],
 			"tag": "v1"
 		}

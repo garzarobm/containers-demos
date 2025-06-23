@@ -6,7 +6,7 @@
 	"migrations": [
 		{
 			"new_sqlite_classes": [
-				"Container",
+				"Container"
 			],
 			"tag": "v1"
 		}
@@ -22,7 +22,7 @@
 			{
 				"class_name": "Container",
 				"name": "CONTAINER"
-			},
+			}
 		]
 	},
 	"observability": {
