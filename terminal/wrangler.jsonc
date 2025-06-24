@@ -7,8 +7,8 @@
   "migrations": [
     {
       "new_sqlite_classes": ["TerminalContainer"],
-      "tag": "v1",
-    },
+      "tag": "v1"
+    }
   ],
   "containers": [
     {
@@ -16,21 +16,18 @@
       "image": "./Dockerfile",
       "class_name": "TerminalContainer",
       "max_instances": 1,
-      "configuration": {
-        "vcpu": 2,
-        "memory_mib": 256,
-      },
-    },
+      "instance_type": "standard"
+    }
   ],
   "durable_objects": {
     "bindings": [
       {
         "class_name": "TerminalContainer",
-        "name": "TERMINAL",
-      },
-    ],
+        "name": "TERMINAL"
+      }
+    ]
   },
   "observability": {
-    "enabled": true,
-  },
+    "enabled": true
+  }
 }

@@ -6,7 +6,7 @@
 	"migrations": [
 		{
 			"new_sqlite_classes": [
-				"Container",
+				"Container"
 			],
 			"tag": "v1"
 		}

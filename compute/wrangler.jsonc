@@ -19,10 +19,7 @@
 		"name": "small",
 		"image": "./Dockerfile",
 		"max_instances": 5,
-		"configuration" : {
-			"vcpu": 1,
-			"memory": "1GB"
-		},
+		"instance_type": "dev",
 		"class_name": "MyContainerSmall"
 
 	},
@@ -30,10 +27,7 @@
 		"name": "medium",
 		"image": "./Dockerfile",
 		"max_instances": 5,
-		"configuration" : {
-			"vcpu": 2,
-			"memory": "2GB"
-		},
+		"instance_type": "basic",
 		"class_name": "MyContainerMedium"
 
 	},
@@ -41,10 +35,7 @@
 		"name": "large",
 		"image": "./Dockerfile",
 		"max_instances": 5,
-		"configuration" : {
-			"vcpu": 3,
-			"memory": "3GB"
-		},
+		"instance_type": "standard",
 		"class_name": "MyContainerLarge"
 
 	}

@@ -1,4 +1,4 @@
-import { Container, getContainer } from "cf-containers";
+import { Container, getContainer } from "@cloudflare/containers";
 import html from "./terminal.html";
 
 export class TerminalContainer extends Container {
