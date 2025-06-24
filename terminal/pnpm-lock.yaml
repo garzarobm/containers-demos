@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@cloudflare/containers':
-        specifier: ^0.0.10
-        version: 0.0.10
+        specifier: ^0.0.13
+        version: 0.0.13
       node-pty:
         specifier: ^1.0.0
         version: 1.0.0
@@ -27,8 +27,8 @@ importers:
 
 packages:
 
-  '@cloudflare/containers@0.0.10':
-    resolution: {integrity: sha512-0C4YZEBhqBvOLGCRB2jv7MDvX4KGdiDqy6XfefBp/lP0cLGkXb1+yrDvPv5wxnjBwzEpNZ5qAoFTqN6WH6gF8A==}
+  '@cloudflare/containers@0.0.13':
+    resolution: {integrity: sha512-qFO2ApEJGRfLlsOqK3ZkvpU3bl7Pj1SquXHs/uEgmK1FTBf2R908T8v7TUlxZpzaJbMM7rLRoCqT0vfUthRqWA==}
 
   '@cloudflare/kv-asset-handler@0.4.0':
     resolution: {integrity: sha512-+tv3z+SPp+gqTIcImN9o0hqE9xyfQjI1XD9pL6NuKjua9B1y7mNYv0S9cP+QEbA4ppVgGZEmKOvHX5G5Ei1CVA==}
@@ -538,7 +538,7 @@ packages:
 
 snapshots:
 
-  '@cloudflare/containers@0.0.10': {}
+  '@cloudflare/containers@0.0.13': {}
 
   '@cloudflare/kv-asset-handler@0.4.0':
     dependencies:
