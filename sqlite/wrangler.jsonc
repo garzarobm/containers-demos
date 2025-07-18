@@ -12,7 +12,6 @@
 		}
 	],
 	"containers": [{
-		"name": "runner",
 		"image": "./Dockerfile",
 		"class_name": "Container",
 		"max_instances": 10
