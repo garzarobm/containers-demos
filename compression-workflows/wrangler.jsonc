@@ -12,7 +12,6 @@
 		}
 	],
 	"containers": [{
-		"name": "compressor-workflows",
 		"image": "./Dockerfile",
 		"class_name": "Compressor",
 		"max_instances": 2

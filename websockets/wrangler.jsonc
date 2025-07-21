@@ -12,7 +12,6 @@
 		}
 	],
 	"containers": [{
-		"name": "container-websockets",
 		"image": "./Dockerfile",
 		"class_name": "Container",
 		"max_instances": 3

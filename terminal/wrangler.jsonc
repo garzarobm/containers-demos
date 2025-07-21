@@ -12,7 +12,6 @@
   ],
   "containers": [
     {
-      "name": "terminal-websockets",
       "image": "./Dockerfile",
       "class_name": "TerminalContainer",
       "max_instances": 1,

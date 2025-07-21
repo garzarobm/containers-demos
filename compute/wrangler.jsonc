@@ -16,29 +16,23 @@
 	],
 	"containers": [
 		{
-		"name": "small",
-		"image": "./Dockerfile",
-		"max_instances": 5,
-		"instance_type": "dev",
-		"class_name": "MyContainerSmall"
-
-	},
+			"image": "./Dockerfile",
+			"max_instances": 5,
+			"instance_type": "dev",
+			"class_name": "MyContainerSmall"
+		},
 		{
-		"name": "medium",
-		"image": "./Dockerfile",
-		"max_instances": 5,
-		"instance_type": "basic",
-		"class_name": "MyContainerMedium"
-
-	},
+			"image": "./Dockerfile",
+			"max_instances": 5,
+			"instance_type": "basic",
+			"class_name": "MyContainerMedium"
+		},
 		{
-		"name": "large",
-		"image": "./Dockerfile",
-		"max_instances": 5,
-		"instance_type": "standard",
-		"class_name": "MyContainerLarge"
-
-	}
+			"image": "./Dockerfile",
+			"max_instances": 5,
+			"instance_type": "standard",
+			"class_name": "MyContainerLarge"
+		}
 	],
 	"durable_objects": {
 		"bindings": [

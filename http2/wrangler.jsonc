@@ -12,7 +12,6 @@
 		}
 	],
 	"containers": [{
-		"name": "http2",
 		"image": "./Dockerfile",
 		"class_name": "Container",
 		"max_instances": 2

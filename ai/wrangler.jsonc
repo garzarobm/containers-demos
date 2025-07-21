@@ -4,7 +4,6 @@
 	"main": "src/index.ts",
 	"compatibility_date": "2025-04-03",
 	"containers": [{
-		"name": "code-executor",
 		"image": "./Dockerfile",
 		"class_name": "CodeExecutor",
 		"max_instances": 2

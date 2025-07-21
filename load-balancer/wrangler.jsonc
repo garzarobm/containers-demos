@@ -13,7 +13,6 @@
 		}
 	],
 	"containers": [{
-		"name": "container-2",
 		"image": "./Dockerfile",
 		"class_name": "Container",
 		"max_instances": 3
